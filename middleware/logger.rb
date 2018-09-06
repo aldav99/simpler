@@ -9,13 +9,15 @@ class AppLogger
 
   def call(env)
 
-    @logger.info "Request: #{env["REQUEST_METHOD"]} #{env["REQUEST_URI"]}"
-    
-    @app.call(env).tap do |response|
-      status, headers, _ = *response
+    request = Rack::Request.new(env)
 
-      @logger.info "Handler: #{headers["Handler"]}\nParameters: #{headers["Parameters"]}"
-      @logger.info "Response: #{status} [#{headers["Content-Type"]}] #{headers["Template"]}"
+    @logger.info "Request: #{env["REQUEST_METHOD"]} #{env["REQUEST_URI"]}"
+
+    @app.call(env).tap do |response|
+      status, headers, _ = response
+      
+      @logger.info "#{request.session[:result]}"
+      @logger.info "Response: #{status} [#{headers["Content-Type"]}]"
       
     end
   end

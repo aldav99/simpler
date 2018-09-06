@@ -3,6 +3,8 @@ require_relative 'view'
 module Simpler
   class Controller
 
+    ENABLE_FORMATS = [:plain]
+
     attr_reader :name, :request, :response
 
     def initialize(env)
@@ -22,12 +24,12 @@ module Simpler
       @response.finish
     end
 
+    
+
     protected
 
     def params
-      controller_name = extract_name
-      reg_exp_string = "#{controller_name}/(?<id>\\d+)"
-      @request.env['REQUEST_PATH'].match(reg_exp_string)[:id]
+      @request.env['REQUEST_PATH'].match("#{extract_name}/(?<param>\\w+)")[:param]
     end
 
     private
@@ -41,16 +43,8 @@ module Simpler
     end
 
     def write_response
-      body = render_body
-
-      header_template = [extract_name, @request.env['simpler.action']].join('/')
-      handler = [self.class.name, @request.env['simpler.action']].join('#')
-      parameters = @request.params.to_s
-
-      @response.add_header 'Template', "#{header_template}.html.erb"
-      @response.add_header 'Handler', handler
-      @response.add_header 'Parameters', parameters
-
+      body = render_body[0]
+      @response['Content-Type'] = render_body[1] || 'text/html'
       @response.write(body)
     end
 
@@ -64,16 +58,20 @@ module Simpler
 
     def render(template)
       @response.status = status(template)
-      if plain_format?(template) 
-        @request.env['simpler.text'] = template[:plain]
-        @response['Content-Type'] = 'text/plain'
-      else
-        @request.env['simpler.template'] = template
-      end
+
+      format_render(template)
+
+      @request.env['simpler.template'] = template
     end
 
-    def plain_format?(template)
-      template.class == Hash && (template.member? :plain)
+    def format_render(template)
+      return unless template.class == Hash
+
+      ENABLE_FORMATS.each do |format|
+
+        @request.env['simpler.renderer'] = "#{format.capitalize}Renderer" if template.member? format
+      end
+
     end
 
     def status(template)
@@ -82,3 +80,4 @@ module Simpler
 
   end
 end
+

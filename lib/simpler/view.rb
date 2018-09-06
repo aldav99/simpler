@@ -1,4 +1,5 @@
 require 'erb'
+require_relative 'plain_renderer'
 
 module Simpler
   class View
@@ -10,14 +11,18 @@ module Simpler
     end
 
     def render(binding)
-      return @env['simpler.text'] if @env['simpler.text']
-
+      return create_renderer(template).response if @env['simpler.renderer']
+      
       template = File.read(template_path)
 
-      ERB.new(template).result(binding)
+      [ERB.new(template).result(binding), 'text/html']
     end
 
     private
+
+    def create_renderer(template)
+      Object.const_get("#{@env['simpler.renderer']}").new(template)
+    end
 
     def controller
       @env['simpler.controller']
@@ -38,4 +43,5 @@ module Simpler
     end
 
   end
+  
 end

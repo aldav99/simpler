@@ -27,15 +27,30 @@ module Simpler
     end
 
     def call(env)
+      @request = Rack::Request.new(env)
+
       route = @router.route_for(env)
       return route_not_find unless route
-      controller = route.controller.new(env)
-      action = route.action
+      @controller = route.controller.new(env)
+      @action = route.action
 
-      make_response(controller, action)
+      result
+
+      make_response(@controller, @action)
     end
 
     private
+
+    def result
+
+      header_template = [@controller.name, @action].join('/')
+      handler = [@controller.class.name, @action].join('#')
+      parameters = @request.params.to_s
+
+      result = "\nHandler: #{handler}\nParameters: #{@request.params.to_s}\nTemplate: #{header_template}.html.erb"
+      
+      @request.session[:result] = result
+    end
 
     def require_app
       Dir["#{Simpler.root}/app/**/*.rb"].each { |file| require file }
