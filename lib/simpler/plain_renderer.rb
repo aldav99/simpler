@@ -1,10 +1,16 @@
 class PlainRenderer 
   
-  def initialize(template)
-    @template = template
+  def initialize(env)
+    @env = env
   end
 
-  def response
-    [@template[:plain], 'text/plain']
+  def render(binding)
+    [template, 'text/plain']
+  end
+
+  private
+
+  def template
+    @env['simpler.template']
   end
 end

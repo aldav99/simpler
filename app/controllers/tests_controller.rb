@@ -2,7 +2,7 @@ class TestsController < Simpler::Controller
 
   def index
     # render 'tests/list'
-    render plain: "Plain text response\n", status: 201
+    # render "Plain text response\n", format: :plain, status: 201 
     @time = Time.now
   end
 
@@ -11,7 +11,8 @@ class TestsController < Simpler::Controller
   end
 
   def show
-    @parameter = params
+    @route_parameter = route_params
+    @request_params = request_params
   end
 
 end

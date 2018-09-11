@@ -1,7 +1,0 @@
-# Logfile created on 2018-09-06 07:16:16 +0300 by logger.rb/56815
-I, [2018-09-06T07:16:24.214543 #20961]  INFO -- : Request: GET /tests/index
-I, [2018-09-06T07:16:24.215195 #20961]  INFO -- : 
-Handler: TestsController#index
-Parameters: {}
-Template: tests/index.html.erb
-I, [2018-09-06T07:16:24.218032 #20961]  INFO -- : Response: 201 [text/plain]

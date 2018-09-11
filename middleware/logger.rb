@@ -15,9 +15,11 @@ class AppLogger
 
     @app.call(env).tap do |response|
       status, headers, _ = response
-      
-      @logger.info "#{request.session[:result]}"
+
+      @logger.info "#{request.env['simpler.result']}"
       @logger.info "Response: #{status} [#{headers["Content-Type"]}]"
+
+      
       
     end
   end
