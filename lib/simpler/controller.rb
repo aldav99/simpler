@@ -25,10 +25,24 @@ module Simpler
 
     
 
-    protected
-
     def route_params
-      hash_params(@request.env['REQUEST_PATH'], @request.env['simpler.route'])["id"]
+      params = {}
+
+      route_element_position = @request.env['simpler.route'].route_element_position
+      route_segment_arr = string_to_array(@request.env['simpler.route'].path)
+      path_segment_arr = string_to_array(@request.env['REQUEST_PATH'])
+
+      route_element_position.each { |pos| params[route_segment_arr[pos][1..route_segment_arr[pos].length]] = path_segment_arr[pos] }
+
+      # route_segment_arr.each_index do |i|
+      #   if route_element?(route_segment_arr[i])
+      #     params[route_segment_arr[i][1..route_segment_arr[i].length]] = path_segment_arr[i]
+      #   else
+      #     return params if route_segment_arr[i] != path_segment_arr[i]
+      #   end
+      # end
+
+      params
     end
 
     def request_params
@@ -71,31 +85,15 @@ module Simpler
       options[:status]
     end
 
-    def route_element?(elem)
-      elem[0] == ':'
-    end
+    # def route_element?(elem)
+    #   elem[0] == ':'
+    # end
 
     def string_to_array(string)
       string.split('/').reject {|e| e.empty?}
     end
 
-    def path_to_hash(string)
-      hash_path = {}
-      arr = string_to_array(string)
-      arr.each_index do |i|
-        hash_path[arr[i][1..arr[i].length]] = i if route_element?(arr[i])
-      end
-      hash_path
-    end
-
-    def hash_params(path, route)
-      params = {}
-      path = string_to_array(path)
-      hash_route = path_to_hash(route)
-      hash_route.each { |key, value| params[key] = path[value] }
-      params
-    end
-
+    
   end
 end
 

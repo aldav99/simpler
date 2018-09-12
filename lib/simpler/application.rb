@@ -34,24 +34,14 @@ module Simpler
       @controller = route.controller.new(env)
       @action = route.action
 
-      @request.env['simpler.route'] = route.path
+      @request.env['simpler.route'] = route
 
-      log_output
 
       make_response(@controller, @action)
     end
 
     private
 
-    def log_output
-
-      header_template = [@controller.name, @action].join('/')
-      handler = [@controller.class.name, @action].join('#')
-      parameters = @request.params.to_s
-
-      
-      @request.env['simpler.result'] = "\nHandler: #{handler}\nParameters: #{@request.params.to_s}\nTemplate: #{header_template}.html.erb"
-    end
 
     def require_app
       Dir["#{Simpler.root}/app/**/*.rb"].each { |file| require file }

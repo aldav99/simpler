@@ -5,6 +5,8 @@ require_relative 'html_renderer'
 module Simpler
   class View
 
+    DEFAULT_RENDERER = "HtmlRenderer"
+
     def initialize(env)
       @env = env
     end
@@ -16,7 +18,7 @@ module Simpler
     private
 
     def create_renderer(env)
-      class_name = env['simpler.format'].nil? ? "HtmlRenderer" : "#{env['simpler.format'].capitalize}Renderer"
+      class_name = env['simpler.format'].nil? ? DEFAULT_RENDERER : "#{env['simpler.format'].capitalize}Renderer"
       Object.const_get(class_name).new(env)
     end
   end

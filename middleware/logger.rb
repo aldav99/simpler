@@ -16,14 +16,15 @@ class AppLogger
     @app.call(env).tap do |response|
       status, headers, _ = response
 
-      @logger.info "#{request.env['simpler.result']}"
-      @logger.info "Response: #{status} [#{headers["Content-Type"]}]"
+      controller = request.env['simpler.controller']
+      action = request.env['simpler.action']
 
-      
-      
+      @logger.info "Handler: #{[controller.class.name, action].join('#')}"
+      @logger.info "Parameters:: #{controller.request_params}"
+      @logger.info "Template: #{[controller.name, action].join('/')}.html.erb"
+
+      @logger.info "Response: #{status} [#{headers["Content-Type"]}]"
     end
   end
 end
-
-
 
