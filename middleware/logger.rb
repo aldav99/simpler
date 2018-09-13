@@ -16,14 +16,17 @@ class AppLogger
     @app.call(env).tap do |response|
       status, headers, _ = response
 
-      controller = request.env['simpler.controller']
-      action = request.env['simpler.action']
+      if controller = request.env['simpler.controller']
+        action = request.env['simpler.action']
 
-      @logger.info "Handler: #{[controller.class.name, action].join('#')}"
-      @logger.info "Parameters:: #{controller.request_params}"
-      @logger.info "Template: #{[controller.name, action].join('/')}.html.erb"
+        @logger.info "Handler: #{[controller.class.name, action].join('#')}"
+        @logger.info "Parameters:: #{controller.request_params}"
+        @logger.info "Template: #{[controller.name, action].join('/')}.html.erb"
 
-      @logger.info "Response: #{status} [#{headers["Content-Type"]}]"
+        @logger.info "Response: #{status} [#{headers["Content-Type"]}]"
+      else
+        @logger.info "Path not found!"
+      end
     end
   end
 end
