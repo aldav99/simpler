@@ -28,7 +28,10 @@ module Simpler
       route_point = route_point.split('#')
       controller = controller_from_string(route_point[0])
       action = route_point[1]
-      route = Route.new(method, path, controller, action)
+      
+      regexp_path = path_to_reg(path)
+
+      route = Route.new(method, path, controller, action, regexp_path)
 
       @routes.push(route)
     end
@@ -37,5 +40,8 @@ module Simpler
       Object.const_get("#{controller_name.capitalize}Controller")
     end
 
+    def path_to_reg(path)
+      path = path.gsub /:\w+/, '(?!index)\w+'
+    end
   end
 end
